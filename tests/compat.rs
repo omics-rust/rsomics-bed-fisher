@@ -8,8 +8,7 @@ fn bedtools_available() -> bool {
     Command::new("bedtools")
         .arg("--version")
         .output()
-        .map(|o| o.status.success())
-        .unwrap_or(false)
+        .is_ok_and(|o| o.status.success())
 }
 
 fn run_our(a: &str, b: &str, genome: &str) -> String {
