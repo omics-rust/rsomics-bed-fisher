@@ -163,17 +163,29 @@ pub fn fisher<RA: Read, RB: Read, RG: Read>(
         }
     }
 
-    // Count overlap pairs: for each A interval, count how many B intervals it overlaps.
+    // Count overlap pairs using a two-pointer sweep per chromosome.
+    // Both A and B are sorted by (chrom, start), so we advance a lower-bound
+    // pointer as A's start increases, dropping B intervals that can never
+    // overlap any later A interval (b.end <= a.start).
     let mut overlap_counts: i64 = 0;
+    // Lower-bound pointer per chromosome: the first B index that might
+    // still overlap the current or any later A interval on this chrom.
+    let mut chrom_lb: HashMap<&str, usize> = HashMap::new();
     for a_rec in &a_recs {
         let Some(&(b_start, b_end)) = b_by_chrom.get(a_rec.chrom.as_str()) else {
             continue;
         };
         let b_slice = &b_recs[b_start..b_end];
 
-        // First B with start < a_rec.end may overlap.
+        // Advance lower bound: drop B intervals whose end <= a_rec.start.
+        let lb = chrom_lb.entry(a_rec.chrom.as_str()).or_insert(0);
+        while *lb < b_slice.len() && b_slice[*lb].end <= a_rec.start {
+            *lb += 1;
+        }
+
+        // Upper bound: first B with start >= a_rec.end cannot overlap.
         let upper = b_slice.partition_point(|b| b.start < a_rec.end);
-        for b_rec in &b_slice[..upper] {
+        for b_rec in &b_slice[*lb..upper] {
             if b_rec.end > a_rec.start {
                 overlap_counts += 1;
             }
