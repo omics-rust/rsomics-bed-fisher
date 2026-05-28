@@ -23,7 +23,7 @@ doctest = false
 [dependencies]
 rsomics-common = { version = "0.6" }
 rsomics-help = { version = "0.3" }
-rsomics-stats = { path = "../../../foundation/rsomics-stats", version = "0.2" }
+rsomics-stats = { version = "0.2" }
 clap = { version = "4", features = ["derive"] }
 
 [dev-dependencies]
