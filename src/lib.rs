@@ -36,7 +36,6 @@ use std::io::{BufRead, BufReader, Read, Write};
 use rsomics_common::{Result, RsomicsError};
 use rsomics_stats::{Alternative, StatsError, fisher_exact_2x2};
 
-/// Parsed BED3 record.
 #[derive(Debug, Clone)]
 struct Bed3 {
     chrom: String,
@@ -67,7 +66,6 @@ fn read_bed<R: Read>(r: R) -> Result<Vec<Bed3>> {
     Ok(records)
 }
 
-/// Parse a genome-sizes file (chrom TAB length per line).
 fn read_genome<R: Read>(r: R) -> Result<i64> {
     let mut total: i64 = 0;
     for line in BufReader::new(r).lines() {
@@ -85,7 +83,6 @@ fn read_genome<R: Read>(r: R) -> Result<i64> {
     Ok(total)
 }
 
-/// Result of the Fisher test.
 #[derive(Debug, Clone)]
 pub struct FisherResult {
     pub query_count: u64,
@@ -322,7 +319,7 @@ fn normalise_sci_exp(s: &str) -> String {
     s.to_owned()
 }
 
-/// Write Fisher result to a writer, matching bedtools fisher output format.
+/// Write Fisher result matching bedtools fisher output format.
 pub fn write_fisher<W: Write>(result: &FisherResult, w: &mut W) -> Result<()> {
     let [[n11, n12], [n21, n22]] = result.table;
     writeln!(w, "# Number of query intervals: {}", result.query_count).map_err(RsomicsError::Io)?;

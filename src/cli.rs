@@ -13,11 +13,6 @@ pub const META: ToolMeta = ToolMeta {
     version: env!("CARGO_PKG_VERSION"),
 };
 
-/// Compute Fisher's exact test for the significance of overlap between two BED files.
-///
-/// Builds a 2×2 contingency table from interval overlap counts and genome size,
-/// then reports left, right, and two-tailed p-values plus the odds ratio.
-/// Both files must be sorted by chrom then start.
 #[derive(Parser, Debug)]
 #[command(name = "rsomics-bed-fisher", disable_help_flag = true)]
 pub struct Cli {
